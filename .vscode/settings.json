@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "atomic": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "list": "c",
+        "vector": "c",
+        "memory_resource": "c",
+        "optional": "c",
+        "string_view": "c",
+        "random": "c",
+        "fstream": "c",
+        "functional": "c",
+        "istream": "c",
+        "type_traits": "c",
+        "tuple": "c",
+        "chrono": "c",
+        "system_error": "c",
+        "numbers": "c"
+    }
+}

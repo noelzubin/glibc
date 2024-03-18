@@ -1138,6 +1138,7 @@ struct malloc_chunk {
   INTERNAL_SIZE_T      mchunk_prev_size;  /* Size of previous chunk (if free).  */
   INTERNAL_SIZE_T      mchunk_size;       /* Size in bytes, including overhead. */
 
+  /* Forward and Backward pointers */
   struct malloc_chunk* fd;         /* double links -- used only if free. */
   struct malloc_chunk* bk;
 
@@ -1466,6 +1467,7 @@ tag_new_usable (void *ptr)
   return ptr;
 }
 
+// [MALLOC REF] Internal data structures
 /*
    -------------------- Internal data structures --------------------
 
@@ -1519,11 +1521,13 @@ tag_new_usable (void *ptr)
 
 typedef struct malloc_chunk *mbinptr;
 
+// Get bin at index i
 /* addressing -- note that bin_at(0) does not exist */
 #define bin_at(m, i) \
   (mbinptr) (((char *) &((m)->bins[((i) - 1) * 2]))			      \
              - offsetof (struct malloc_chunk, fd))
 
+// Find next bin ??
 /* analog of ++bin */
 #define next_bin(b)  ((mbinptr) ((char *) (b) + (sizeof (mchunkptr) << 1)))
 
@@ -1616,6 +1620,7 @@ unlink_chunk (mstate av, mchunkptr p)
   if (__builtin_expect (fd->bk != p || bk->fd != p, 0))
     malloc_printerr ("corrupted double-linked list");
 
+  // Remove the chunk from the linked list here.
   fd->bk = bk;
   bk->fd = fd;
   if (!in_smallbin_range (chunksize_nomask (p)) && p->fd_nextsize != NULL)
@@ -3288,13 +3293,15 @@ tcache_thread_shutdown (void)
 
 #endif /* !USE_TCACHE  */
 
+// [MALLOC 0]
 #if IS_IN (libc)
 void *
 __libc_malloc (size_t bytes)
 {
-  mstate ar_ptr;
-  void *victim;
+  mstate ar_ptr; // empty struct
+  void *victim; // ??
 
+  // check if gt 2^63
   _Static_assert (PTRDIFF_MAX <= SIZE_MAX / 2,
                   "PTRDIFF_MAX is not more than half of SIZE_MAX");
 
@@ -3875,6 +3882,7 @@ _int_malloc (mstate av, size_t bytes)
      aligned.
    */
 
+  // validate size
   nb = checked_request2size (bytes);
   if (nb == 0)
     {
@@ -3888,7 +3896,7 @@ _int_malloc (mstate av, size_t bytes)
     {
       void *p = sysmalloc (nb, av);
       if (p != NULL)
-	alloc_perturb (p, bytes);
+	alloc_perturb (p, bytes); // this seems to somehow changes the initial values in the memory for some reason
       return p;
     }
 

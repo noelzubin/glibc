@@ -258,6 +258,7 @@ TUNABLE_CALLBACK_FNDECL (set_hugetlb, size_t)
 static void tcache_key_initialize (void);
 #endif
 
+// [MALLOC 0.1] malloc init fn 
 static void
 ptmalloc_init (void)
 {
